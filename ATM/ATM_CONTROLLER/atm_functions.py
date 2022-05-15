@@ -17,7 +17,8 @@ class controller():
         else:
             print("Su numero ingresado no es correcto intente de nuevo")
 
-    def getAccountBalance(self,idAccount):
+    def getAccountBalance(self,cardInfoList):
+        idAccount=int(cardInfoList[1])
         accounts=dao.getTableInfo(2)
         for account in accounts:
             if account[0]==int(idAccount):
@@ -25,9 +26,9 @@ class controller():
                 break
         if codeExists:
             currentBalance=dao.getAccountBalance(idAccount)
-            currentBalance=int(currentBalance[0])
+            currentBalance=float(currentBalance[0])
         else:
-            currentBalance=None
+            currentBalance=0.0
         return currentBalance
 
     def getPasswordTries(self,cardInfoList):
