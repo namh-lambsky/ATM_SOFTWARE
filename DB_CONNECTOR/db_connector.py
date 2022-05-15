@@ -49,23 +49,6 @@ class DAO():
                 except Error as ex:
                     print("Error al intentar la conexión: {0}".format(ex))
 
-    def getAccountPassword(self,id):
-        try:
-            cursor=self.bankDB.cursor()
-            cursor.execute("SELECT accountPassword FROM accounts WHERE idAccount='{0}'".format(id))
-            result=cursor.fetchone()
-            return result
-        except Error as ex:
-            print("Error al intentar la conexión: {0}".format(ex))
-
-    def getAccountBalance(self,id):
-        try:
-            cursor=self.bankDB.cursor()
-            cursor.execute("SELECT accountBalance FROM accounts WHERE idAccount='{0}'".format(id))
-            result=cursor.fetchone()
-            return result
-        except Error as ex:
-            print("Error al intentar la conexión: {0}".format(ex))
 
     def updateAccountBalance(self,idAccount,accountBalance):
         try:
@@ -143,6 +126,25 @@ class DAO():
                 print("¡Cuenta eliminada con exito!")
             except Error as ex:
                     print("Error al intentar la conexión: {0}".format(ex))
+
+    def getAccountPassword(self,id):
+        try:
+            cursor=self.bankDB.cursor()
+            cursor.execute("SELECT accountPassword FROM accounts WHERE idAccount='{0}'".format(id))
+            result=cursor.fetchone()
+            return result
+        except Error as ex:
+            print("Error al intentar la conexión: {0}".format(ex))
+
+    def getAccountBalance(self,id):
+        try:
+            cursor=self.bankDB.cursor()
+            cursor.execute("SELECT accountBalance FROM accounts WHERE idAccount='{0}'".format(id))
+            result=cursor.fetchone()
+            return result
+        except Error as ex:
+            print("Error al intentar la conexión: {0}".format(ex))
+
 #----------------------------------------------Funciones Tarjeta
     def newCard(self,card):
         if self.bankDB.is_connected():
@@ -166,14 +168,54 @@ class DAO():
             except Error as ex:
                     print("Error al intentar la conexión: {0}".format(ex))
 
-    def deleteCard(self,idAccountDelete):
+    def deleteCard(self,idCardDelete):
         if self.bankDB.is_connected():
             try:
                 cursor=self.bankDB.cursor()
                 sqlInstruction="DELETE FROM cards WHERE idCard = '{0}' "
-                cursor.execute(sqlInstruction.format(idAccountDelete))
+                cursor.execute(sqlInstruction.format(idCardDelete))
                 self.bankDB.commit()
                 print("¡Cuenta eliminada con exito!")
             except Error as ex:
                     print("Error al intentar la conexión: {0}".format(ex))
 
+    def getCardState(self,idCard):
+        if self.bankDB.is_connected():
+            try:
+                cursor=self.bankDB.cursor()
+                cursor.execute("SELECT cardState FROM cards WHERE idCard='{0}'".format(idCard))
+                result=cursor.fetchone()
+                return result
+            except Error as ex:
+                    print("Error al intentar la conexión: {0}".format(ex))
+
+    def getPasswordTries(self,idCard):
+        if self.bankDB.is_connected():
+            try:
+                cursor=self.bankDB.cursor()
+                cursor.execute("SELECT passwordTries FROM cards WHERE idCard='{0}'".format(idCard))
+                result=cursor.fetchone()
+                return result
+            except Error as ex:
+                    print("Error al intentar la conexión: {0}".format(ex))
+
+
+    def updatePasswordTries(self,idCard,tries):
+        if self.bankDB.is_connected():
+            try:
+                cursor=self.bankDB.cursor()
+                sqlInstruction="UPDATE cards SET passwordTries='{1}' WHERE idCard='{0}'"
+                cursor.execute(sqlInstruction.format(idCard,tries))
+                self.bankDB.commit()
+            except Error as ex:
+                    print("Error al intentar la conexión: {0}".format(ex))
+
+    def updateCardState(self,idCard,state):
+        if self.bankDB.is_connected():
+            try:
+                cursor=self.bankDB.cursor()
+                sqlInstruction="UPDATE cards SET cardState='{1}' WHERE idCard='{0}'"
+                cursor.execute(sqlInstruction.format(idCard,state))
+                self.bankDB.commit()
+            except Error as ex:
+                    print("Error al intentar la conexión: {0}".format(ex))

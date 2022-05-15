@@ -1,11 +1,14 @@
 import os
 import sys
 import tkinter as tk
+from tkinter import messagebox
+import cv2
+import time
+from pyzbar.pyzbar import decode
 from PIL import Image, ImageTk
 script_dir = os.path.dirname( __file__ )
 controller_dir = os.path.join( script_dir, 'ATM_CONTROLLER')
 sys.path.append( controller_dir )
-print(sys.path)
 from atm_functions import controller
 
 
@@ -33,7 +36,7 @@ class SampleApp(tk.Tk):
             frame=F(parent=container, controller=self)
             self.frames[page_name]=frame
             frame.grid(row=0,column=0,sticky="nsew")
-        self.show_frame(self, page_name)
+        self.show_frame("MenuInicioSesion")
 
     def show_frame(self,page_name):
         #Funcion que muestra un frame dado el nombre del mismo
@@ -78,12 +81,6 @@ class MenuIngresoTarjeta(tk.Frame):
         self.controller=controller
         self.controller.title('Cajero Automatico Bancolombia')
 
-        global cardInfo
-        cardInfo=c.getCardList()
-
-        if cardInfo!=None:
-            controller.shared_data['accountId'].set(cardInfo[1])
-            controller.shared_data['Balance'].set(float(c.getAccountBalance(controller.shared_data['accountId'].get())))
 
         bg_image_ingreso_tarjeta= Image.open("ATM/IMAGES/IngresoTarjetaContraseña.png")
         resized_image_ingreso_tarjeta=bg_image_ingreso_tarjeta.resize((1920,1080))
@@ -111,6 +108,32 @@ class MenuIngresoTarjeta(tk.Frame):
         # contenga números.
             return text.isdecimal()
 
+        def getCardInfo():
+            cap=cv2.VideoCapture(0)
+            cap.set(3,640)
+            cap.set(4,480)
+            used_codes=[]
+            camera=True
+            while camera:
+                    success,frame=cap.read()
+                    for code in decode(frame):
+                        if code.data.decode('utf-8') not in used_codes:
+                            cardInfo=code.data.decode('utf-8')
+                            cardInfoList=cardInfo.split()
+                            used_codes.append(code.data.decode('utf-8'))
+                            time.sleep(5)
+                            camera=False
+                        elif code.data.decode('utf-8') in used_codes:
+                            messagebox.showerror(message="La camara ya esta activada",title="Error!")
+                            time.sleep(5)
+                        else:
+                            pass
+                    cv2.imshow("IngresoTarjeta",frame)
+                    cv2.waitKey(1)
+            cap.release()
+            cv2.destroyWindow("IngresoTarjeta")
+            return cardInfoList
+
         def login(cardInfoList,ingresoTarjetaContraseñaTx):
                 if c.passwordValidation(cardInfoList,ingresoTarjetaContraseñaTx.get()):
                     go_to_MenuTransacciones()
@@ -120,6 +143,12 @@ class MenuIngresoTarjeta(tk.Frame):
 
         def go_to_MenuInicioSesion():
             controller.show_frame('MenuInicioSesion')
+
+        global cardInfo
+        cardInfo=getCardInfo()
+        if cardInfo!=None:
+            controller.shared_data['accountId'].set(cardInfo[1])
+            controller.shared_data['balance'].set(float(c.getAccountBalance(controller.shared_data['accountId'].get())))
 
         entry_ingreso_tarjeta= tk.Entry(self,show="*",width=6,font=("Helvetica",24),border=0)
         entry_ingreso_tarjeta.place(x=630,y=204)
@@ -139,7 +168,7 @@ class MenuTransacciones(tk.Frame):
         self.controller=controller
         self.controller.title('Cajero Automatico Bancolombia')
         #abrir la imagen para el fondo de pantalla
-        bg_image_Menu_Transacciones= Image.open("ATM/IMAGES/MenuTransacciones.png")
+        bg_image_Menu_Transacciones= Image.open("ATM/IMAGES/MenuTransaccion.png")
         resized_image=bg_image_Menu_Transacciones.resize((1920,1080))
         bg_image_Menu_Transacciones= ImageTk.PhotoImage(resized_image)
 
@@ -164,37 +193,37 @@ class PaginaRetiros(tk.Frame):
         self.controller=controller
         self.controller.title('Cajero Automatico Bancolombia')
 
-    
+
         bg_image_Pagina_Retiros= Image.open("ATM/IMAGES/RetirarDinero.png")
         resized_image=bg_image_Pagina_Retiros.resize((1920,1080))
         bg_image_Pagina_Retiros= ImageTk.PhotoImage(resized_image)
 
-        background_label_Pagina_Retiros=tk.Label(self.window, image=bg_image_Pagina_Retiros)
+        background_label_Pagina_Retiros=tk.Label(self, image=bg_image_Pagina_Retiros)
         background_label_Pagina_Retiros.image=bg_image_Pagina_Retiros
         background_label_Pagina_Retiros.place(x=0,y=0)
 
-        bt_Pagina_Retiros_10000= tk.Button(self.window, padx=25, pady=15,border=0, bg="#DD5222")
+        bt_Pagina_Retiros_10000= tk.Button(self, padx=25, pady=15,border=0, bg="#DD5222")
         bt_Pagina_Retiros_10000.place(x=25,y=10)
 
-        bt_Pagina_Retiros_20000= tk.Button(self.window, padx=25, pady=15,border=0, bg="#DD5222")
+        bt_Pagina_Retiros_20000= tk.Button(self, padx=25, pady=15,border=0, bg="#DD5222")
         bt_Pagina_Retiros_20000.place(x=25,y=145)
 
-        bt_Pagina_Retiros_50000= tk.Button(self.window, padx=25, pady=15,border=0, bg="#DD5222")
+        bt_Pagina_Retiros_50000= tk.Button(self, padx=25, pady=15,border=0, bg="#DD5222")
         bt_Pagina_Retiros_50000.place(x=25,y=280)
 
-        bt_Pagina_Retiros_Finalizar= tk.Button(self.window, padx=25, pady=15,border=0, bg="#DD5222")
+        bt_Pagina_Retiros_Finalizar= tk.Button(self, padx=25, pady=15,border=0, bg="#DD5222")
         bt_Pagina_Retiros_Finalizar.place(x=25,y=415)
 
-        bt_Pagina_Retiros_150000= tk.Button(self.window, padx=25, pady=15,border=0, bg="#DD5222")
+        bt_Pagina_Retiros_150000= tk.Button(self, padx=25, pady=15,border=0, bg="#DD5222")
         bt_Pagina_Retiros_150000.place(x=1170,y=10)
 
-        bt_Pagina_Retiros_250000= tk.Button(self.window, padx=25, pady=15,border=0, bg="#DD5222")
+        bt_Pagina_Retiros_250000= tk.Button(self, padx=25, pady=15,border=0, bg="#DD5222")
         bt_Pagina_Retiros_250000.place(x=1170,y=145)
 
-        bt_Pagina_Retiros_350000= tk.Button(self.window, padx=25, pady=15,border=0, bg="#DD5222")
+        bt_Pagina_Retiros_350000= tk.Button(self, padx=25, pady=15,border=0, bg="#DD5222")
         bt_Pagina_Retiros_350000.place(x=1170,y=280)
 
-        menuTransaccionBtRetirarDineroOtroValor= tk.Button(self.window, padx=25, pady=15,border=0, bg="#DD5222")
+        menuTransaccionBtRetirarDineroOtroValor= tk.Button(self, padx=25, pady=15,border=0, bg="#DD5222")
         menuTransaccionBtRetirarDineroOtroValor.place(x=1170,y=415)
 
 class ConsultarSaldo(tk.Frame):
