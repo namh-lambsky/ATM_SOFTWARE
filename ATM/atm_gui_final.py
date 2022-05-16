@@ -238,15 +238,26 @@ ingresarSinTarjetafondo.place(x=0,y=0)
 IngresoSinTarjetaContraseñaLb=Label(ingresarSinTarjeta,image=contraseñaIcon,border=0)
 IngresoSinTarjetaContraseñaLb.place(x=510,y=210)
 
+#Comando para la validación del entry(que sean 4 digitos y que sean numeros)
+def validate_entrySin(text, new_text):
+    # Primero chequear que el contenido total no exceda los diez caracteres.
+    if len(new_text) > 4:
+        return False
+    # Luego, si la validación anterior no falló, chequear que el texto solo
+    # contenga números.
+    return text.isdecimal()
+
 IngresoSinTarjetaContraseñaTx= Entry(ingresarSinTarjeta, show="*",width=10,font=("Helvetica",24),border=0)
 IngresoSinTarjetaContraseñaTx.place(x=557,y=214)
+IngresoSinTarjetaContraseñaTx.config(validate='key',validatecommand=(ventana.register(validate_entrySin), "%S", "%P"))
+IngresoSinTarjetaContraseñaTx.focus_set()
 
 #BotonesingresarSinTarjeta
 
 ingresarSinTarjetaBtIngresar= Button(ingresarSinTarjeta, padx=25,border=0, pady=15, bg="#7ed957",command = lambda: c.clearTextInput(IngresoSinTarjetaContraseñaTx,framesList,menuTransaccion))
 ingresarSinTarjetaBtIngresar.place(x=100,y=345)
 
-ingresarSinTarjetaBt2Ingresar= Button(ingresarSinTarjeta, padx=25,border=0, pady=15, bg="#e61717",command = lambda: c.clearTextInput(IngresoSinTarjetaContraseñaTx,framesList,menuPrincipal))
+ingresarSinTarjetaBt2Ingresar= Button(ingresarSinTarjeta, padx=25,border=0, pady=15, bg="#e61717",command = lambda: framesManager(framesList,menuPrincipal))
 ingresarSinTarjetaBt2Ingresar.place(x=100,y=445)
 
 #MenuTransaccion--------------------------------------------------------------------------
