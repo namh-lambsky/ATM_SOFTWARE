@@ -2,6 +2,7 @@ from tkinter import *
 import os
 import sys
 from tkinter import messagebox
+
 script_dir = os.path.dirname( __file__ )
 connector_dir = os.path.join( script_dir,'..','..', 'DB_CONNECTOR')
 sys.path.append( connector_dir )
@@ -13,23 +14,8 @@ class controller():
         if int(text) < 2700000 and int(text) %5==0:
             amount=int(text)
             entry.delete("0","end")
-            self.withdrawal(amount,)
         else:
             print("Su numero ingresado no es correcto intente de nuevo")
-
-    def getAccountBalance(self,cardInfoList):
-        idAccount=int(cardInfoList[1])
-        accounts=dao.getTableInfo(2)
-        for account in accounts:
-            if account[0]==int(idAccount):
-                codeExists=True
-                break
-        if codeExists:
-            currentBalance=dao.getAccountBalance(idAccount)
-            currentBalance=float(currentBalance[0])
-        else:
-            currentBalance=0.0
-        return currentBalance
 
     def getPasswordTries(self,cardInfoList):
         codeExists=False
@@ -57,6 +43,113 @@ class controller():
             cardState=dao.getCardState(cardId)
         return cardState
 
+    def getAccountBalance(self,cardInfoList):
+        idAccount=int(cardInfoList[1])
+        accounts=dao.getTableInfo(2)
+        for account in accounts:
+            if account[0]==int(idAccount):
+                codeExists=True
+                break
+        if codeExists:
+            currentBalance=dao.getAccountBalance(idAccount)
+            currentBalance=float(currentBalance[0])
+        else:
+            currentBalance=0.0
+        return currentBalance
+
+    def getWithdrawalCount(self,cardInfoList):
+        idAccount=int(cardInfoList[1])
+        accounts=dao.getTableInfo(2)
+        for account in accounts:
+            if account[0]==int(idAccount):
+                codeExists=True
+                break
+        if codeExists:
+            withdrawalCount=dao.getWithdrawalCount(idAccount)
+            withdrawalCount=int(withdrawalCount[0])
+
+        return withdrawalCount
+
+    def getWithdrawalState(self,cardInfoList):
+        idAccount=int(cardInfoList[1])
+        accounts=dao.getTableInfo(2)
+        for account in accounts:
+            if account[0]==int(idAccount):
+                codeExists=True
+                break
+        if codeExists:
+            withdrawalState=dao.getWithdrawalState(idAccount)
+            withdrawalState=int(withdrawalState[0])
+
+        return withdrawalState
+
+    def accountIsBlocked(self,cardInfoList):
+        idAccount=int(cardInfoList[1])
+        accounts=dao.getTableInfo(2)
+        for account in accounts:
+            if account[0]==int(idAccount):
+                codeExists=True
+                break
+        if codeExists:
+            state=self.getWithdrawalState(cardInfoList)
+            if state==1:
+                accountBlocked=True
+            else:
+                accountBlocked=False
+        return accountBlocked
+
+    def updateWithdrawalCount(self,cardInfoList):
+        idAccount=int(cardInfoList[1])
+        accounts=dao.getTableInfo(2)
+        for account in accounts:
+            if account[0]==int(idAccount):
+                codeExists=True
+                break
+        if codeExists:
+            currentCount=self.getWithdrawalCount(cardInfoList)
+            if currentCount==0:
+                dao.updateWithdrawalState(idAccount,state=1)
+            else:
+                currentCount-=1
+                dao.updateWithdrawalCount(idAccount,currentCount)
+
+
+
+    def updatePassword(self,cardInfoList,newPassword):
+        idAccount=int(cardInfoList[1])
+        accounts=dao.getTableInfo(2)
+        for account in accounts:
+            if account[0]==int(idAccount):
+                codeExists=True
+                break
+        if codeExists:
+            dao.updateAccountPassword(idAccount,newPassword)
+            updateSuccess=True
+        else:
+            updateSuccess=False
+
+        return updateSuccess
+
+
+
+    def withdrawal(self,amount,cardInfoList):
+        idAccount=int(cardInfoList[1])
+        accounts=dao.getTableInfo(2)
+        currentBalance=self.getAccountBalance(cardInfoList)
+        for account in accounts:
+            if account[0]==int(idAccount):
+                codeExists=True
+                break
+        if codeExists:
+            if currentBalance>amount:
+                newBalance=currentBalance-amount
+                dao.updateAccountBalance(idAccount,newBalance)
+                withdrawalSuccess=True
+            else:
+                withdrawalSuccess=False
+        return withdrawalSuccess
+
+
     def updatePasswordTries(self,cardInfoList):
         codeExists=False
         cardId=int(cardInfoList[0])
@@ -74,7 +167,6 @@ class controller():
                 dao.updatePasswordTries(cardId,currentTries)
 
     def cardIsBlocked(self,cardInfoList):
-        codeExists=False
         cardId=int(cardInfoList[0])
         cards=dao.getTableInfo(3)
         for card in cards:
@@ -108,19 +200,3 @@ class controller():
                 userCanEnter=False
 
         return userCanEnter
-
-    def entryPasswordValidation(self,entry,framesList,frametoShow):
-        try:
-            passwordEntry=entry.get()
-            passwordIsCorrect=True
-            print(passwordEntry)
-            pass
-            if passwordIsCorrect:
-                self.framesManager(framesList,frametoShow)
-                entry.delete("0","end")
-        except Exception as e:
-            print ("error: "+str(e))
-
-    def clearTextInput(self,entry,framesList,frametoShow):
-        entry.delete("0","end")
-        self.framesManager(framesList,frametoShow)
