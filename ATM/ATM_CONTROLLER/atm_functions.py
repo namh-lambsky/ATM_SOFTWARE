@@ -108,12 +108,11 @@ class controller():
         if codeExists:
             currentCount=self.getWithdrawalCount(cardInfoList)
             if currentCount==0:
-                dao.updateWithdrawalState(idAccount,state=1)
+                state=1
+                dao.updateWithdrawalState(idAccount,state)
             else:
                 currentCount-=1
                 dao.updateWithdrawalCount(idAccount,currentCount)
-
-
 
     def updatePassword(self,cardInfoList,newPassword):
         idAccount=int(cardInfoList[1])
@@ -130,7 +129,40 @@ class controller():
 
         return updateSuccess
 
+    def accountTransferExists(self,idAccountTransfer):
+        accounts=dao.getTableInfo(2)
+        for account in accounts:
+            if account[0]==idAccountTransfer:
+                codeExists=True
+                break
+        return codeExists
 
+    def transfer(self,amount,cardInfoList,cardInfoTList):
+        idAccount=int(cardInfoList[1])
+        idAccountT=int(cardInfoTList[1])
+        accounts=dao.getTableInfo(2)
+        currentBalanceAcc1=self.getAccountBalance(cardInfoList)
+        currentBalanceAcc2=self.getAccountBalance(cardInfoTList)
+        for account in accounts:
+            if account[0]==int(idAccount):
+                codeExists=True
+                break
+
+        if self.accountTransferExists(idAccountT):
+            codeExists=True
+        else:
+            codeExists=False
+
+        if codeExists:
+            if currentBalanceAcc1>amount:
+                newBalanceAcc1=currentBalanceAcc1-amount
+                newBalanceAcc2=currentBalanceAcc2+amount
+                dao.updateAccountBalance(idAccount,newBalanceAcc1)
+                dao.updateAccountBalance(idAccountT,newBalanceAcc2)
+                transferSuccess=True
+            else:
+                transferSuccess=False
+        return transferSuccess
 
     def withdrawal(self,amount,cardInfoList):
         idAccount=int(cardInfoList[1])

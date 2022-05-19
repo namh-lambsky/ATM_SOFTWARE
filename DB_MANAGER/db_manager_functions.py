@@ -11,8 +11,6 @@ from customer import Customer
 from account import Account
 from card import Card
 
-print(sys.path)
-
 qr=qrcode.QRCode(
     version=1,
     box_size=15,

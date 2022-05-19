@@ -7,19 +7,21 @@ import sys
 import cv2
 import time
 from pyzbar.pyzbar import decode
+from tkinter.font import Font
 script_dir = os.path.dirname( __file__ )
 controller_dir = os.path.join( script_dir, 'ATM_CONTROLLER')
 sys.path.append( controller_dir )
 from atm_functions import controller
 
-c=controller()
 ventana=Tk()
-ventana.geometry("1250x580")
-ventana.rowconfigure(0,weight=1)
-ventana.columnconfigure(0,weight=1)
-ventana.resizable (0,0)
 ventana.iconbitmap('ATM/IMAGES/LogoBancolombia.ico')
 ventana.title('Cajero Automatico Bancolombia')
+ventana.rowconfigure(0,weight=1)
+ventana.columnconfigure(0,weight=1)
+ventana.geometry("1250x580")
+ventana.resizable (0,0)
+c=controller()
+
 #Numero de paginas
 
 menuPrincipal= Frame(ventana)
@@ -33,29 +35,40 @@ consultarSaldo= Frame(ventana)
 transferencias= Frame(ventana)
 transferenciasOp= Frame(ventana)
 transferenciaNumeroDeCuenta= Frame(ventana)
-confirmaciónCuenta= Frame(ventana)
-codigoDeBarras= Frame(ventana)
+transferenciaRetiro= Frame(ventana)
+confirmacionCuenta= Frame(ventana)
+codigoQR= Frame(ventana)
 imprimirRecibo= Frame(ventana)
 nuevoSaldo= Frame(ventana)
 cambioContraseña=Frame(ventana)
 otroMonto=Frame(ventana)
 cambioContraseñaR= Frame(ventana)
+ingresarMontoTransferencia= Frame(ventana)
 
 
+#fuente de letra
 
+fuenteLetra= Font(
+    family="Helvetica",
+    size=20,
+    weight="bold",
+    slant="roman",
+    underline=0,
+    overstrike=0
+)
 
-framesList=[menuPrincipal, ingresarTarjeta,ingresarSinTarjeta, ingresoTarjetaContraseña,menuTransaccion, retirarDinero, consultarSaldo, transferencias, transferenciasOp, transferenciaNumeroDeCuenta, confirmaciónCuenta, codigoDeBarras, imprimirRecibo, nuevoSaldo, otroMonto, cambioContraseña, cambioContraseñaR]
+framesList=[menuPrincipal, ingresarTarjeta,ingresarSinTarjeta, ingresoTarjetaContraseña,menuTransaccion, retirarDinero, consultarSaldo, transferencias, transferenciasOp, transferenciaNumeroDeCuenta, confirmacionCuenta, codigoQR, imprimirRecibo, nuevoSaldo, otroMonto, cambioContraseña, cambioContraseñaR,ingresarMontoTransferencia]
+for frame in framesList:
+    frame.grid(row=0,column=0,sticky="nsew")
 
-def framesManager(framesList, frame_name):
-        for frame in framesList:
-            frame.grid(row=0,column=0,sticky="nsew")
+def framesManager(frame_name):
         frame_name.tkraise()
 
-def clearText(framesList,frame_name,entry):
+def clearText(frame_name,entry):
     entry.delete("0","end")
-    framesManager(framesList,frame_name)
+    framesManager(frame_name)
 
-framesManager(framesList,menuPrincipal)
+framesManager(menuPrincipal)
 
 #imagenes
 bgMainMenu= Image.open("ATM/IMAGES/Pantallaprincipal.png")
@@ -134,6 +147,14 @@ bgCambioConstraseñaR=Image.open("ATM/IMAGES/CambioContraseñaR.png")
 resizeImagef=bgCambioConstraseñaR.resize((1250,580))
 bgCambioConstraseñaR=ImageTk.PhotoImage(resizeImagef)
 
+bgRetiroConfirmacion=Image.open("ATM/IMAGES/RetiroConfirmacion.png")
+resizeImagef=bgRetiroConfirmacion.resize((1250,580))
+bgRetiroConfirmacion=ImageTk.PhotoImage(resizeImagef)
+
+bgTranseferenciaMonto=Image.open("ATM/IMAGES/TransferenciaEntry.png")
+resizeImagef=bgTranseferenciaMonto.resize((1250,580))
+bgTranseferenciaMonto=ImageTk.PhotoImage(resizeImagef)
+
 #iconos
 contraseñaIcon= Image.open("ATM/IMAGES/EntryShape.png")
 resizeImageC=contraseñaIcon.resize((300,50))
@@ -157,7 +178,7 @@ def getCardInfo():
             used_codes=[]
             camera=True
             while camera:
-                    success,frame=cap.read()
+                    sucess,frame=cap.read()
                     for code in decode(frame):
                         if code.data.decode('utf-8') not in used_codes:
                             cardInfo=code.data.decode('utf-8')
@@ -178,7 +199,7 @@ def getCardInfo():
 
 def loadQR():
     getCardInfo()
-    framesManager(framesList,ingresoTarjetaContraseña)
+    framesManager(ingresoTarjetaContraseña)
     ingresoTarjetaContraseñaTx.focus_set()
 #botones
 menuPrincipalBtIngresarTarjeta= Button(menuPrincipal, padx=25,border=0, pady=15, bg="#DD5222",command = lambda: loadQR())
@@ -206,7 +227,7 @@ IngresoTarjetaCodigoTx.config(validate='key',validatecommand=(ventana.register(v
 ingresarTarjetaBtIngresar= Button(ingresarTarjeta, padx=25,border=0, pady=15, bg="#7ed957",command = lambda: getCardInfo())
 ingresarTarjetaBtIngresar.place(x=100,y=345)
 
-ingresarTarjetaBtFinalizar= Button(ingresarTarjeta, padx=25,border=0, pady=15, bg="#e61717",command = lambda: framesManager(framesList,menuPrincipal))
+ingresarTarjetaBtFinalizar= Button(ingresarTarjeta, padx=25,border=0, pady=15, bg="#e61717",command = lambda: framesManager(menuPrincipal))
 ingresarTarjetaBtFinalizar.place(x=100,y=445)
 
 #IngresoTarjetaContraseña---------------------------------------------------------------------------------
@@ -216,6 +237,12 @@ ingresoTarjetaContraseñafondo.place(x=0,y=0)
 
 ingresoTarjetaContraseñaLb=Label(ingresoTarjetaContraseña,image=contraseñaIcon,border=0)
 ingresoTarjetaContraseñaLb.place(x=510,y=200)
+
+ingresoContraseñaErrorLb1=Label(ingresoTarjetaContraseña,text="",width=50,font=fuenteLetra,border=0, foreground="red", background="white")
+ingresoContraseñaErrorLb1.place(x=320,y=100)
+
+ingresoContraseñaErrorLb2=Label(ingresoTarjetaContraseña,text="",width=70,font=fuenteLetra,border=0, foreground="red", background="white")
+ingresoContraseñaErrorLb2.place(x=200,y=100)
 
 #Comando para la validación del entry(que sean 4 digitos y que sean numeros)
 def validate_entry(text, new_text):
@@ -234,21 +261,25 @@ ingresoTarjetaContraseñaTx.config(validate='key',validatecommand=(ventana.regis
 def login(ingresoTarjetaContraseñaTx,cardInfoList=None):
     passCount=c.getPasswordTries(cardInfoList)
     if c.cardIsBlocked(cardInfoList):
-        messagebox.showerror(message="Tarjeta Bloqueada")
-        framesManager(framesList,menuPrincipal)
+        retrieveErrorMessage(ingresoContraseñaErrorLb1,"TARJETA BLOQUEADA")
+        #messagebox.showerror(message="Tarjeta Bloqueada")
+        ingresoTarjetaContraseñaTx.delete("0","end")
+        framesManager(menuPrincipal)
     else:
         if passCount==0:
             c.updatePasswordTries(cardInfoList)
-            messagebox.showerror(message="Se agotaron sus intentos de inicio de sesion, Tarjeta Bloqueada")
+            retrieveErrorMessage(ingresoContraseñaErrorLb2,"SE AGOTARON SUS INTENTOS DE INICIO DE SESION, TARJETA BLOQUEADA")
+            #messagebox.showerror(message="Se agotaron sus intentos de inicio de sesion, Tarjeta Bloqueada")
             ingresoTarjetaContraseñaTx.delete("0","end")
-            framesManager(framesList,menuPrincipal)
+            framesManager(menuPrincipal)
         else:
             if c.passwordValidation(cardInfoList,ingresoTarjetaContraseñaTx.get()):
                 ingresoTarjetaContraseñaTx.delete("0","end")
-                framesManager(framesList,menuTransaccion)
+                framesManager(menuTransaccion)
             else:
                 passCount-=1
-                messagebox.showerror(message="contraseña errada le quedan {0} intentos".format(passCount))
+                retrieveErrorMessage(ingresoContraseñaErrorLb2,"CONTRASEÑA ERRADA LE QUEDAN {0} INTENTOS".format(passCount))
+                #messagebox.showerror(message="contraseña errada le quedan {0} intentos".format(passCount))
                 ingresoTarjetaContraseñaTx.delete("0","end")
                 c.updatePasswordTries(cardInfoList)
 
@@ -256,13 +287,15 @@ def login(ingresoTarjetaContraseñaTx,cardInfoList=None):
 IngresoTarjetaBtIngresar= Button(ingresoTarjetaContraseña, padx=25,border=0, pady=15, bg="#7ed957",command = lambda:login(ingresoTarjetaContraseñaTx,cardInfoList))
 IngresoTarjetaBtIngresar.place(x=100,y=345)
 
-IngresoTarjetaBtFinalizar= Button(ingresoTarjetaContraseña, padx=25,border=0, pady=15, bg="#e61717",command = lambda: clearText(framesList,menuPrincipal,ingresoTarjetaContraseñaTx))
+IngresoTarjetaBtFinalizar= Button(ingresoTarjetaContraseña, padx=25,border=0, pady=15, bg="#e61717",command = lambda: clearText(menuPrincipal,ingresoTarjetaContraseñaTx))
 IngresoTarjetaBtFinalizar.place(x=100,y=445)
 
 #CambioContraseña
 
 cambioContraseñafondo= Label(cambioContraseña, image=bgCambioConstraseña)
 cambioContraseñafondo.place(x=0,y=0)
+cambioContraseñafondoErrorLb=Label(cambioContraseña,text="",width=50,font=fuenteLetra,border=0, foreground="red", background="white")
+cambioContraseñafondoErrorLb.place(x=410,y=100)
 
 #Comando para la validación del entry(que sean 4 digitos y que sean numeros)
 def validate_entryCambio(text, new_text):
@@ -276,7 +309,7 @@ def validate_entryCambio(text, new_text):
 def loadCambioContraseñaR():
     global password
     password=cambioContraseñaTx.get()
-    framesManager(framesList,cambioContraseñaR)
+    framesManager(cambioContraseñaR)
     cambioContraseñaRTx.focus_set()
     cambioContraseñaTx.delete("0","end")
 
@@ -289,13 +322,15 @@ cambioContraseñaTx.config(validate='key',validatecommand=(ventana.register(vali
 cambioContraseñaBtIngresar= Button(cambioContraseña, padx=25,border=0, pady=15, bg="#7ed957",command=lambda: loadCambioContraseñaR())
 cambioContraseñaBtIngresar.place(x=100,y=345)
 
-cambioContraseñaBtFinalizar= Button(cambioContraseña, padx=25,border=0, pady=15, bg="#e61717",command=lambda: clearText(framesList,menuPrincipal,cambioContraseñaTx))
+cambioContraseñaBtFinalizar= Button(cambioContraseña, padx=25,border=0, pady=15, bg="#e61717",command=lambda: clearText(menuPrincipal,cambioContraseñaTx))
 cambioContraseñaBtFinalizar.place(x=100,y=445)
 
 #CambioContraseñaR
 
 cambioContraseñaRfondo= Label(cambioContraseñaR, image=bgCambioConstraseñaR)
 cambioContraseñaRfondo.place(x=0,y=0)
+cambioContraseñaRfondoErrorLb=Label(cambioContraseñaR,text="",width=100,font=fuenteLetra,border=0, foreground="red", background="white")
+cambioContraseñaRfondoErrorLb.place(x=410,y=100)
 
 #Comando para la validación del entry(que sean 4 digitos y que sean numeros)
 def validate_entryCambio(text, new_text):
@@ -306,19 +341,20 @@ def validate_entryCambio(text, new_text):
     # contenga números.
     return text.isdecimal()
 
-
 def changePassword(cambioContraseñaTx,cambioContraseñaRTx,cardInfoList):
     if cambioContraseñaTx==cambioContraseñaRTx:
         if c.updatePassword(cardInfoList,cambioContraseñaRTx):
-            messagebox.showinfo(message="La contraseña fue actualizada exitosamente")
+            retrieveErrorMessage(cambioContraseñaRfondoErrorLb,"LA CONSTRASEÑA FUE ACTUALIZADA EXITOSAMENTE")
+            #messagebox.showinfo(message="La contraseña fue actualizada exitosamente")
             cambioContraseñaTx.delete("0","end")
             cambioContraseñaRTx.delete("0","end")
-            framesManager(framesList,menuTransaccion)
+            framesManager(menuTransaccion)
     else:
-        messagebox.showerror(message="Las contraseñas no coinciden, ingresela de nuevo")
+        retrieveErrorMessage(cambioContraseñaRfondoErrorLb,"LAS CONSTRASEÑAS NO COINCIDEN, INGRESELA DE NUEVO")
+        #messagebox.showerror(message="Las contraseñas no coinciden, ingresela de nuevo")
         cambioContraseñaTx.delete("0","end")
         cambioContraseñaRTx.delete("0","end")
-        framesManager(framesList,cambioContraseña)
+        framesManager(cambioContraseña)
 
 #Entry para el cambio de la contraseña
 cambioContraseñaRTx = Entry(cambioContraseñaR, show="*",width=6,font=("Helvetica",24),border=0)
@@ -329,7 +365,7 @@ cambioContraseñaRTx.config(validate='key',validatecommand=(ventana.register(val
 cambioContraseñaRBtIngresar= Button(cambioContraseñaR, padx=25,border=0, pady=15, bg="#7ed957",command=lambda: changePassword(password,cambioContraseñaRTx.get(),cardInfoList))
 cambioContraseñaRBtIngresar.place(x=100,y=345)
 
-cambioContraseñaRBtFinalizar= Button(cambioContraseñaR, padx=25,border=0, pady=15, bg="#e61717",command=lambda: clearText(framesList,menuPrincipal,cambioContraseñaRTx))
+cambioContraseñaRBtFinalizar= Button(cambioContraseñaR, padx=25,border=0, pady=15, bg="#e61717",command=lambda: clearText(menuPrincipal,cambioContraseñaRTx))
 cambioContraseñaRBtFinalizar.place(x=100,y=445)
 
 #MenuTransaccion--------------------------------------------------------------------------
@@ -339,28 +375,31 @@ menuTransaccionfondo.place(x=0,y=0)
 
 def loadBalance(cardInfoList):
     retrieveAccountBalance(cardInfoList,nuevoSaldoLbSaldo)
-    framesManager(framesList,nuevoSaldo)
+    framesManager(nuevoSaldo)
 
 def retrieveAccountBalance(cardInfoList,labelText):
     currentBalance=str(c.getAccountBalance(cardInfoList))
     labelText.config(text=currentBalance)
-    return currentBalance
+
+def retrieveErrorMessage(labelText,message):
+    labelText.config(text=message)
+    time.sleep(5)
 
 def loadCambioContraseña():
-    framesManager(framesList,cambioContraseña)
+    framesManager(cambioContraseña)
     cambioContraseñaTx.focus_set()
 
 #botones MenuTransaccion
-menuTransaccionBtRetirarDinero= Button(menuTransaccion, padx=25, pady=15,border=0, bg="#DD5222",command = lambda: framesManager(framesList,retirarDinero))
+menuTransaccionBtRetirarDinero= Button(menuTransaccion, padx=25, pady=15,border=0, bg="#DD5222",command = lambda: framesManager(retirarDinero))
 menuTransaccionBtRetirarDinero.place(x=25,y=150)
 
 menuTransaccionBtConsultaSaldo= Button(menuTransaccion, padx=25, pady=15,border=0, bg="#DD5222",command = lambda: loadBalance(cardInfoList))
 menuTransaccionBtConsultaSaldo.place(x=25,y=285)
 
-menuTransaccionBtSalir= Button(menuTransaccion, padx=25, pady=15,border=0, bg="#DD5222",command = lambda: framesManager(framesList,menuPrincipal))
+menuTransaccionBtSalir= Button(menuTransaccion, padx=25, pady=15,border=0, bg="#DD5222",command = lambda: framesManager(menuPrincipal))
 menuTransaccionBtSalir.place(x=25,y=420)
 
-menuTransaccionBtTransferencias= Button(menuTransaccion, padx=25, pady=15,border=0, bg="#DD5222",command = lambda: framesManager(framesList,transferenciasOp))
+menuTransaccionBtTransferencias= Button(menuTransaccion, padx=25, pady=15,border=0, bg="#DD5222",command = lambda: framesManager(transferenciasOp))
 menuTransaccionBtTransferencias.place(x=1170,y=150)
 
 menuTransaccionBtCambioContraseña= Button(menuTransaccion, padx=25, pady=15,border=0, bg="#DD5222",command = lambda: loadCambioContraseña())
@@ -380,7 +419,6 @@ def validate_entryR(text, new_text):
     # contenga números.
     return text.isdecimal()
 
-
 #Comando para la validación del entry(que sean >10000 digitos y que sean numeros)
 def validate_entryRetiro(text):
     if int(text) < 2700000 and int(text) %5==0:
@@ -391,23 +429,32 @@ def validate_entryRetiro(text):
 
 def loadWithdrawalMessage(amount,cardInfoList):
     withdrawalCount=c.getWithdrawalCount(cardInfoList)
-    if c.accountIsBlocked(cardInfoList):
-        messagebox.showerror(message="Error: Ya supero el maximo de retiros diarios, retornado al menu transacciones")
-        framesManager(framesList,menuTransaccion)
+    if amount < 10000:
+        retrieveErrorMessage(otroMontoErrorLb,"EL NUMERO NO ES VALIDO INTENTE DE NUEVO")
+        #messagebox.showerror(message="Error: El numero no es valido intente de nuevo")
+        otroMontoTx.delete("0","end")
     else:
-        if withdrawalCount==0:
-            c.updateWithdrawalCount(cardInfoList)
+        if c.accountIsBlocked(cardInfoList):
+            messagebox.showerror(message="Error: Ya supero el maximo de retiros diarios, retornado al menu transacciones")
+            otroMontoTx.delete("0","end")
+            framesManager(menuTransaccion)
         else:
-            if c.withdrawal(amount,cardInfoList):
-                messagebox.showinfo(message="¡Transaccion Exitosa! no olvide retirar su dinero")
-                framesManager(framesList,menuTransaccion)
+            if withdrawalCount==0:
                 c.updateWithdrawalCount(cardInfoList)
+                otroMontoTx.delete("0","end")
             else:
-                messagebox.showerror(message="Error: Saldo Insuficiente, retornado al menu transacciones")
-                framesManager(framesList,menuTransaccion)
+                if c.withdrawal(amount,cardInfoList):
+                    messagebox.showinfo(message="¡Transaccion Exitosa! no olvide retirar su dinero")
+                    c.updateWithdrawalCount(cardInfoList)
+                    otroMontoTx.delete("0","end")
+                    framesManager(menuTransaccion)
+                else:
+                    messagebox.showerror(message="Error: Saldo Insuficiente, retornado al menu transacciones")
+                    otroMontoTx.delete("0","end")
+                    framesManager(menuTransaccion)
 
 def loadOtroMonto():
-    framesManager(framesList,otroMonto)
+    framesManager(otroMonto)
     otroMontoTx.focus_set()
 
 #botones RetirarDinero
@@ -432,12 +479,15 @@ bt_Pagina_Retiros_350000.place(x=1170,y=300)
 menuTransaccionBtRetirarDineroOtroValor= Button(retirarDinero, padx=25, pady=15,border=0, bg="#DD5222", command= loadOtroMonto)
 menuTransaccionBtRetirarDineroOtroValor.place(x=1170,y=430)
 
-bt_Pagina_Retiros_Finalizar= Button(retirarDinero, padx=25, pady=15,border=0, bg="#DD5222",command= lambda: framesManager(framesList,menuTransaccion))
+bt_Pagina_Retiros_Finalizar= Button(retirarDinero, padx=25, pady=15,border=0, bg="#DD5222",command= lambda: framesManager(menuTransaccion))
 bt_Pagina_Retiros_Finalizar.place(x=25,y=430)
+
 #Otro Monto-------------------------------------------------------------------------------------------------
 
 bgOtroMontoLabel= Label(otroMonto, image=bgOtroMonto)
 bgOtroMontoLabel.place(x=0,y=0)
+otroMontoErrorLb=Label(otroMonto,text="",width=50,font=fuenteLetra,border=0, foreground="red", background="white")
+otroMontoErrorLb.place(x=390,y=100)
 
 otroMontoTx= Entry(otroMonto,width=10,font=("Helvetica",24),border=0)
 otroMontoTx.config(validate='key',validatecommand=(ventana.register(validate_entryR), "%S", "%P"))
@@ -447,21 +497,8 @@ otroMontoTx.place(x=557,y=225)
 otroMontoBtIngresar= Button(otroMonto, padx=25,border=0, pady=15, bg="#7ed957", command= lambda: loadWithdrawalMessage(float(otroMontoTx.get()),cardInfoList))
 otroMontoBtIngresar.place(x=100,y=345)
 
-otroMontoBtMenuT= Button(otroMonto, padx=25,border=0, pady=15, bg="#e61717",command = lambda: clearText(framesList,menuPrincipal,otroMontoTx))
+otroMontoBtMenuT= Button(otroMonto, padx=25,border=0, pady=15, bg="#e61717",command = lambda: clearText(menuPrincipal,otroMontoTx))
 otroMontoBtMenuT.place(x=100,y=445)
-
-#Consultar saldo-------------------------------------------------------------------------------------------------
-
-#label
-consultarSaldoFondo =Label(consultarSaldo, image=bgConsultarSaldo)
-consultarSaldoFondo.place(x=0,y=0)
-
-#botones
-consultarSaldoBtImprimir= Button(consultarSaldo, padx=25,border=0, pady=15, bg="#DD5222",command = lambda: framesManager(framesList,imprimirRecibo))
-consultarSaldoBtImprimir.place(x=15,y=290)
-
-consultarSaldoBtVer= Button(consultarSaldo, padx=25,border=0, pady=15, bg="#DD5222",command = lambda: framesManager(framesList,nuevoSaldo))
-consultarSaldoBtVer.place(x=1175,y=290)
 
 #TransferenciasOp----------------------------------------------------------------------------------------------------
 
@@ -470,14 +507,53 @@ transferenciasOpFondo =Label(transferenciasOp, image=bgTransferenciasOp)
 transferenciasOpFondo.place(x=0,y=0)
 
 def loadNumeroDeCuenta():
-    framesManager(framesList,transferenciaNumeroDeCuenta)
+    framesManager(transferenciaNumeroDeCuenta)
     transferenciaNumeroDeCuentaTx.focus_set()
 
+def getCardToTransfer():
+            capT=cv2.VideoCapture(0)
+            capT.set(3,640)
+            capT.set(4,480)
+            used_codes=[]
+            camera=True
+            while camera:
+                    success,frame=capT.read()
+                    for code in decode(frame):
+                        if code.data.decode('utf-8') not in used_codes:
+                            cardInfo=code.data.decode('utf-8')
+                            global cardInfoTList
+                            cardInfoTList=cardInfo.split()
+                            used_codes.append(code.data.decode('utf-8'))
+                            time.sleep(5)
+                            camera=False
+                        elif code.data.decode('utf-8') in used_codes:
+                            messagebox.showerror(message="La camara ya esta activada",title="Error!")
+                            time.sleep(5)
+                        else:
+                            pass
+                    cv2.imshow("IngresoTarjetaTransaccion",frame)
+                    cv2.waitKey(1)
+            capT.release()
+            cv2.destroyWindow("IngresoTarjetaTransaccion")
+
+def loadQRTransfer():
+    getCardToTransfer()
+    loadAccIdLbl(1)
+
+def loadAccIdLbl(fromPage):
+    framesManager(confirmacionCuenta)
+    global idAccountTransfer
+    if fromPage==0:
+        idAccountTransfer=numeroCuenta
+        confirmacionCuentaLabel.config(text="¿EL NUMERO DE CUENTA: {0} ES A QUIEN\n DESEA HACER LA TRANSFERENCIA?".format(numeroCuenta))
+    else:
+        idAccountTransfer=cardInfoTList[1]
+        confirmacionCuentaLabel.config(text="¿EL NUMERO DE CUENTA: {0} ES A QUIEN\n DESEA HACER LA TRANSFERENCIA?".format(cardInfoTList[1]))
 #botones
-transferenciasOpBtNumero= Button(transferenciasOp, padx=25,border=0, pady=15, bg="#DD5222",command = lambda: loadNumeroDeCuenta)
+transferenciasOpBtNumero= Button(transferenciasOp, padx=25,border=0, pady=15, bg="#DD5222",command = lambda: loadNumeroDeCuenta())
 transferenciasOpBtNumero.place(x=15,y=270)
 
-transferenciasOpBtCodigo= Button(transferenciasOp, padx=25,border=0, pady=15, bg="#DD5222",command = lambda:framesManager(framesList,codigoDeBarras))
+transferenciasOpBtCodigo= Button(transferenciasOp, padx=25,border=0, pady=15, bg="#DD5222",command = lambda:loadQRTransfer())
 transferenciasOpBtCodigo.place(x=1175,y=270)
 
 #transferenciaNumeroDeCuenta--------------------------------------------------------------------------------------------
@@ -504,37 +580,34 @@ transferenciaNumeroDeCuentaTx.config(validate='key',validatecommand=(ventana.reg
 
 #botones transferenciaNumeroDeCuenta
 
-transferenciaNumeroDeCuentaBtIngresar= Button(transferenciaNumeroDeCuenta, padx=25,border=0, pady=15, bg="#7ed957",command = lambda: c.clearTextInput(transferenciaNumeroDeCuentaTx,framesList,confirmaciónCuenta))
+transferenciaNumeroDeCuentaBtIngresar= Button(transferenciaNumeroDeCuenta, padx=25,border=0, pady=15, bg="#7ed957",command = lambda:getNumeroCuenta())
 transferenciaNumeroDeCuentaBtIngresar.place(x=100,y=345)
 
-transferenciaNumeroDeCuentaBt2Ingresar= Button(transferenciaNumeroDeCuenta, padx=25,border=0, pady=15, bg="#e61717",command = lambda: c.clearTextInput(transferenciaNumeroDeCuentaTx,framesList,menuTransaccion))
-transferenciaNumeroDeCuentaBt2Ingresar.place(x=100,y=445)
+transferenciaNumeroDeCuentaBtRegresar= Button(transferenciaNumeroDeCuenta, padx=25,border=0, pady=15, bg="#e61717",command = lambda: framesManager(menuTransaccion))
+transferenciaNumeroDeCuentaBtRegresar.place(x=100,y=445)
+
+#funcion transferencia
+def getNumeroCuenta():
+    global numeroCuenta
+    numeroCuenta=transferenciaNumeroDeCuentaTx.get()
+    loadAccIdLbl(0)
 
 #ConfirmaciónCuenta-------------------------------------------------------------------------------------------------------
 
 #label
-ConfirmaciónCuentaFondo =Label(confirmaciónCuenta, image=bgConfirmacionCuenta)
+ConfirmaciónCuentaFondo =Label(confirmacionCuenta, image=bgConfirmacionCuenta)
 ConfirmaciónCuentaFondo.place(x=0,y=0)
 
+confirmacionCuentaLabel=Label(confirmacionCuenta,text="",width=70,font=fuenteLetra,border=0,background="white")
+confirmacionCuentaLabel.place(x=90,y=200)
+
+
 #botones
-ConfirmaciónCuentaBtIngresar= Button(confirmaciónCuenta, padx=25,border=0, pady=15, bg="#7ed957",command = lambda: c.framesManager(framesList,consultarSaldo))
+ConfirmaciónCuentaBtIngresar= Button(confirmacionCuenta, padx=25,border=0, pady=15, bg="#7ed957",command = lambda: framesManager(ingresarMontoTransferencia))
 ConfirmaciónCuentaBtIngresar.place(x=100,y=345)
 
-ConfirmaciónCuentaBt2Ingresar= Button(confirmaciónCuenta, padx=25,border=0, pady=15, bg="#e61717",command = lambda: c.framesManager(framesList,menuTransaccion))
-ConfirmaciónCuentaBt2Ingresar.place(x=100,y=445)
-
-#CodigoDeBarras-------------------------------------------------------------------------------------------------------------
-
-CodigoDeBarrasfondo=Label(codigoDeBarras, image=bgCodigoDeBarras)
-CodigoDeBarrasfondo.place(x=0,y=0)
-
-#Botones
-
-CodigoDeBarrasBtIngresar= Button(codigoDeBarras, padx=25,border=0, pady=15, bg="#7ed957",command = lambda: c.framesManager(framesList,confirmaciónCuenta))
-CodigoDeBarrasBtIngresar.place(x=100,y=345)
-
-CodigoDeBarrasBt2Ingresar= Button(codigoDeBarras, padx=25,border=0, pady=15, bg="#e61717",command = lambda: c.framesManager(framesList,menuTransaccion))
-CodigoDeBarrasBt2Ingresar.place(x=100,y=445)
+ConfirmaciónCuentaBtRegresar= Button(confirmacionCuenta, padx=25,border=0, pady=15, bg="#e61717",command = lambda: framesManager(transferenciasOp))
+ConfirmaciónCuentaBtRegresar.place(x=100,y=445)
 
 #ImprimirRecibo------------------------------------------------------------------------------------------------------------------------
 
@@ -544,7 +617,7 @@ imprimirRecibofondo.place(x=0,y=0)
 
 #Botones
 
-imprimirReciboBtIngresar= Button(imprimirRecibo, padx=25,border=0, pady=15, bg="#e61717",command = lambda: framesManager(framesList,menuPrincipal))
+imprimirReciboBtIngresar= Button(imprimirRecibo, padx=25,border=0, pady=15, bg="#e61717",command = lambda: framesManager(menuPrincipal))
 imprimirReciboBtIngresar.place(x=100,y=345)
 
 #NuevoSaldo-----------------------------------------------------------------------------------------------------------------------------
@@ -557,11 +630,52 @@ nuevoSaldoLbSaldo.place(x=525,y=250)
 
 #Botones
 
-nuevoSaldoBtMenuT= Button(nuevoSaldo, padx=25,border=0, pady=15, bg="#DD5222",command = lambda: framesManager(framesList,menuTransaccion))
+nuevoSaldoBtMenuT= Button(nuevoSaldo, padx=25,border=0, pady=15, bg="#DD5222",command = lambda: framesManager(menuTransaccion))
 nuevoSaldoBtMenuT.place(x=100,y=355)
 
-nuevoSaldoBtCerrarSesion= Button(nuevoSaldo, padx=25,border=0, pady=15, bg="#DD5222",command = lambda: framesManager(framesList,menuPrincipal))
+nuevoSaldoBtCerrarSesion= Button(nuevoSaldo, padx=25,border=0, pady=15, bg="#DD5222",command = lambda: framesManager(menuPrincipal))
 nuevoSaldoBtCerrarSesion.place(x=100,y=450)
 
+#Funcion transferencia
+def loadTransferMessage(amount,cardInfoList,cardInfoTList):
+    withdrawalCount=c.getWithdrawalCount(cardInfoList)
+    if amount < 10000:
+        retrieveErrorMessage(otroMontoErrorLb,"EL NUMERO NO ES VALIDO INTENTE DE NUEVO")
+        #messagebox.showerror(message="Error: El numero no es valido intente de nuevo")
+        otroMontoTx.delete("0","end")
+    else:
+        if c.accountIsBlocked(cardInfoList):
+            messagebox.showerror(message="Error: Ya supero el maximo de retiros diarios, retornado al menu transacciones")
+            otroMontoTx.delete("0","end")
+            framesManager(menuTransaccion)
+        else:
+            if withdrawalCount==0:
+                c.updateWithdrawalCount(cardInfoList)
+                otroMontoTx.delete("0","end")
+            else:
+                if c.transfer(amount,cardInfoList,cardInfoTList):
+                    messagebox.showinfo(message="¡Transaccion Exitosa! no olvide retirar su dinero")
+                    c.updateWithdrawalCount(cardInfoList)
+                    otroMontoTx.delete("0","end")
+                    framesManager(menuTransaccion)
+                else:
+                    messagebox.showerror(message="Error: Saldo Insuficiente, retornado al menu transacciones")
+                    otroMontoTx.delete("0","end")
+                    framesManager(menuTransaccion)
+
+#ingresarMontoTransaccion
+ingresarMontoTransferenciaLabel= Label(ingresarMontoTransferencia, image=bgOtroMonto)
+ingresarMontoTransferenciaLabel.place(x=0,y=0)
+
+ingresarMontoTransferenciaTx= Entry(ingresarMontoTransferencia,width=10,font=("Helvetica",24),border=0)
+ingresarMontoTransferenciaTx.config(validate='key',validatecommand=(ventana.register(validate_entryR), "%S", "%P"))
+ingresarMontoTransferenciaTx.place(x=557,y=225)
+
+#botones
+ingresarMontoTransferenciaBtIngresar= Button(ingresarMontoTransferencia, padx=25,border=0, pady=15, bg="#7ed957", command= lambda: loadTransferMessage(float(ingresarMontoTransferenciaTx.get()),cardInfoList,cardInfoTList))
+ingresarMontoTransferenciaBtIngresar.place(x=100,y=345)
+
+ingresarMontoTransferenciaBtMenuT= Button(ingresarMontoTransferencia, padx=25,border=0, pady=15, bg="#e61717",command = lambda: clearText(menuTransaccion,ingresarMontoTransferenciaTx))
+ingresarMontoTransferenciaBtMenuT.place(x=100,y=445)
 
 ventana.mainloop()
