@@ -1,20 +1,14 @@
 from tkinter import *
 from tkinter import messagebox
 from PIL import Image, ImageTk
-from tkinter import ttk
-import os
-import sys
 import cv2
 import time
 from pyzbar.pyzbar import decode
 from tkinter.font import Font
-script_dir = os.path.dirname( __file__ )
-controller_dir = os.path.join( script_dir, 'ATM_CONTROLLER')
-sys.path.append( controller_dir )
 from atm_functions import controller
 
 ventana=Tk()
-ventana.iconbitmap('ATM/IMAGES/LogoBancolombia.ico')
+ventana.iconbitmap('IMAGES/LogoBancolombia.ico')
 ventana.title('Cajero Automatico Bancolombia')
 ventana.rowconfigure(0,weight=1)
 ventana.columnconfigure(0,weight=1)
@@ -26,25 +20,17 @@ c=controller()
 
 menuPrincipal= Frame(ventana)
 ingresarTarjeta= Frame(ventana)
-ingresarSinTarjeta= Frame(ventana)
-ingresoCorreo= Frame(ventana)
 menuTransaccion= Frame(ventana)
 ingresoTarjetaContraseña= Frame(ventana)
 retirarDinero= Frame(ventana)
-consultarSaldo= Frame(ventana)
-transferencias= Frame(ventana)
 transferenciasOp= Frame(ventana)
 transferenciaNumeroDeCuenta= Frame(ventana)
-transferenciaRetiro= Frame(ventana)
 confirmacionCuenta= Frame(ventana)
-codigoQR= Frame(ventana)
-imprimirRecibo= Frame(ventana)
 nuevoSaldo= Frame(ventana)
 cambioContraseña=Frame(ventana)
 otroMonto=Frame(ventana)
 cambioContraseñaR= Frame(ventana)
 ingresarMontoTransferencia= Frame(ventana)
-
 
 #fuente de letra
 
@@ -57,7 +43,7 @@ fuenteLetra= Font(
     overstrike=0
 )
 
-framesList=[menuPrincipal, ingresarTarjeta,ingresarSinTarjeta, ingresoTarjetaContraseña,menuTransaccion, retirarDinero, consultarSaldo, transferencias, transferenciasOp, transferenciaNumeroDeCuenta, confirmacionCuenta, codigoQR, imprimirRecibo, nuevoSaldo, otroMonto, cambioContraseña, cambioContraseñaR,ingresarMontoTransferencia]
+framesList=[menuPrincipal, ingresarTarjeta, ingresoTarjetaContraseña,menuTransaccion, retirarDinero, transferenciasOp, transferenciaNumeroDeCuenta, confirmacionCuenta, nuevoSaldo, otroMonto, cambioContraseña, cambioContraseñaR,ingresarMontoTransferencia]
 for frame in framesList:
     frame.grid(row=0,column=0,sticky="nsew")
 
@@ -71,98 +57,94 @@ def clearText(frame_name,entry):
 framesManager(menuPrincipal)
 
 #imagenes
-bgMainMenu= Image.open("ATM/IMAGES/Pantallaprincipal.png")
+bgMainMenu= Image.open("IMAGES/Pantallaprincipal.png")
 resizeImagef=bgMainMenu.resize((1250,580))
 bgMainMenu= ImageTk.PhotoImage(resizeImagef)
 
-bgIngresarTarjeta= Image.open("ATM/IMAGES/IngreseCodigoTarjeta.png")
+bgIngresarTarjeta= Image.open("IMAGES/IngreseCodigoTarjeta.png")
 resizeImagef=bgIngresarTarjeta.resize((1250,580))
 bgIngresarTarjeta= ImageTk.PhotoImage(resizeImagef)
 
-bgIngresarSinTarjeta= Image.open("ATM/IMAGES/3.png")
+bgIngresarSinTarjeta= Image.open("IMAGES/3.png")
 resizeImagef=bgIngresarSinTarjeta.resize((1250,580))
 bgIngresarSinTarjeta= ImageTk.PhotoImage(resizeImagef)
 
-bgIngresoCorreo= Image.open("ATM/IMAGES/IngresoCorreo.png")
+bgIngresoCorreo= Image.open("IMAGES/IngresoCorreo.png")
 resizeImagef=bgIngresoCorreo.resize((1250,580))
 bgIngresoCorreo= ImageTk.PhotoImage(resizeImagef)
 
-bgIngresarIdTarjeta= Image.open("ATM/IMAGES/IngreseCodigoTarjeta.png")
+bgIngresarIdTarjeta= Image.open("IMAGES/IngreseCodigoTarjeta.png")
 resizeImagef=bgIngresarIdTarjeta.resize((1250,580))
 bgIngresarIdTarjeta= ImageTk.PhotoImage(resizeImagef)
 
-bgMenuTransaccion= Image.open("ATM/IMAGES/MenuTransaccion.png")
+bgMenuTransaccion= Image.open("IMAGES/MenuTransaccion.png")
 resizeImagef=bgMenuTransaccion.resize((1250,580))
 bgMenuTransaccion= ImageTk.PhotoImage(resizeImagef)
 
-fondoIngresoTarjetaContraseña= Image.open("ATM/IMAGES/IngresoTarjetaContraseña.png")
+fondoIngresoTarjetaContraseña= Image.open("IMAGES/IngresoTarjetaContraseña.png")
 resizeImagef=fondoIngresoTarjetaContraseña.resize((1250,580))
 fondoIngresoTarjetaContraseña= ImageTk.PhotoImage(resizeImagef)
 
-bgRetiroDinero= Image.open("ATM/IMAGES/MenuRetiro.png")
+bgRetiroDinero= Image.open("IMAGES/MenuRetiro.png")
 resized_image=bgRetiroDinero.resize((1250,580))
 bgRetiroDinero= ImageTk.PhotoImage(resized_image)
 
-bgConsultarSaldo= Image.open("ATM/IMAGES/ConsultarSaldo.png")
+bgConsultarSaldo= Image.open("IMAGES/ConsultarSaldo.png")
 resizeImagef=bgConsultarSaldo.resize((1250,580))
 bgConsultarSaldo= ImageTk.PhotoImage(resizeImagef)
 
-bgTransferencias= Image.open("ATM/IMAGES/Transferencias.png")
+bgTransferencias= Image.open("IMAGES/Transferencias.png")
 resizeImagef=bgTransferencias.resize((1250,580))
 bgTransferencias= ImageTk.PhotoImage(resizeImagef)
 
-bgTransferenciasOp= Image.open("ATM/IMAGES/TransferenciasOp.png")
+bgTransferenciasOp= Image.open("IMAGES/TransferenciasOp.png")
 resizeImagef=bgTransferenciasOp.resize((1250,580))
 bgTransferenciasOp= ImageTk.PhotoImage(resizeImagef)
 
-bgTransferenciaNumeroDeCuenta= Image.open("ATM/IMAGES/TransferenciaNumeroDeCuenta.png")
+bgTransferenciaNumeroDeCuenta= Image.open("IMAGES/TransferenciaNumeroDeCuenta.png")
 resizeImagef=bgTransferenciaNumeroDeCuenta.resize((1250,580))
 bgTransferenciaNumeroDeCuenta= ImageTk.PhotoImage(resizeImagef)
 
-bgConfirmacionCuenta= Image.open("ATM/IMAGES/ConfirmacionCuenta.png")
+bgConfirmacionCuenta= Image.open("IMAGES/ConfirmacionCuenta.png")
 resizeImagef=bgConfirmacionCuenta.resize((1250,580))
 bgConfirmacionCuenta= ImageTk.PhotoImage(resizeImagef)
 
-bgCodigoDeBarras= Image.open("ATM/IMAGES/CodigoDeBarras.png")
+bgCodigoDeBarras= Image.open("IMAGES/CodigoDeBarras.png")
 resizeImagef=bgCodigoDeBarras.resize((1250,580))
 bgCodigoDeBarras= ImageTk.PhotoImage(resizeImagef)
 
-bgImprimirRecibo= Image.open("ATM/IMAGES/ImprimirRecibo.png")
+bgImprimirRecibo= Image.open("IMAGES/ImprimirRecibo.png")
 resizeImagef=bgImprimirRecibo.resize((1250,580))
 bgImprimirRecibo= ImageTk.PhotoImage(resizeImagef)
 
-bgNuevoSaldo= Image.open("ATM/IMAGES/MenuSaldoPantalla.png")
+bgNuevoSaldo= Image.open("IMAGES/MenuSaldoPantalla.png")
 resizeImagef=bgNuevoSaldo.resize((1250,580))
 bgNuevoSaldo= ImageTk.PhotoImage(resizeImagef)
 
-bgOtroMonto=Image.open("ATM/IMAGES/OtroMonto.png")
+bgOtroMonto=Image.open("IMAGES/OtroMonto.png")
 resizeImagef=bgOtroMonto.resize((1250,580))
 bgOtroMonto=ImageTk.PhotoImage(resizeImagef)
 
-bgCambioConstraseña=Image.open("ATM/IMAGES/CambioContraseña.png")
+bgCambioConstraseña=Image.open("IMAGES/CambioContraseña.png")
 resizeImagef=bgCambioConstraseña.resize((1250,580))
 bgCambioConstraseña=ImageTk.PhotoImage(resizeImagef)
 
-bgCambioConstraseñaR=Image.open("ATM/IMAGES/CambioContraseñaR.png")
+bgCambioConstraseñaR=Image.open("IMAGES/CambioContraseñaR.png")
 resizeImagef=bgCambioConstraseñaR.resize((1250,580))
 bgCambioConstraseñaR=ImageTk.PhotoImage(resizeImagef)
 
-bgRetiroConfirmacion=Image.open("ATM/IMAGES/RetiroConfirmacion.png")
+bgRetiroConfirmacion=Image.open("IMAGES/RetiroConfirmacion.png")
 resizeImagef=bgRetiroConfirmacion.resize((1250,580))
 bgRetiroConfirmacion=ImageTk.PhotoImage(resizeImagef)
 
-bgTranseferenciaMonto=Image.open("ATM/IMAGES/TransferenciaEntry.png")
+bgTranseferenciaMonto=Image.open("IMAGES/TransferenciaEntry.png")
 resizeImagef=bgTranseferenciaMonto.resize((1250,580))
 bgTranseferenciaMonto=ImageTk.PhotoImage(resizeImagef)
 
 #iconos
-contraseñaIcon= Image.open("ATM/IMAGES/EntryShape.png")
+contraseñaIcon= Image.open("IMAGES/EntryShape.png")
 resizeImageC=contraseñaIcon.resize((300,50))
 contraseñaIcon=ImageTk.PhotoImage(resizeImageC)
-
-entryHiddenIcon=Image.open("ATM/IMAGES/EntryHidden.png")
-resizeImageE=entryHiddenIcon.resize((506,226))
-entryHiddenIcon=ImageTk.PhotoImage(resizeImageE)
 
 #menuPrincipal---------------------------------------------------------
 
@@ -609,16 +591,6 @@ ConfirmaciónCuentaBtIngresar.place(x=100,y=345)
 ConfirmaciónCuentaBtRegresar= Button(confirmacionCuenta, padx=25,border=0, pady=15, bg="#e61717",command = lambda: framesManager(transferenciasOp))
 ConfirmaciónCuentaBtRegresar.place(x=100,y=445)
 
-#ImprimirRecibo------------------------------------------------------------------------------------------------------------------------
-
-imprimirRecibofondo=Label(imprimirRecibo, image=bgImprimirRecibo)
-imprimirRecibofondo.place(x=0,y=0)
-
-
-#Botones
-
-imprimirReciboBtIngresar= Button(imprimirRecibo, padx=25,border=0, pady=15, bg="#e61717",command = lambda: framesManager(menuPrincipal))
-imprimirReciboBtIngresar.place(x=100,y=345)
 
 #NuevoSaldo-----------------------------------------------------------------------------------------------------------------------------
 
@@ -678,4 +650,5 @@ ingresarMontoTransferenciaBtIngresar.place(x=100,y=345)
 ingresarMontoTransferenciaBtMenuT= Button(ingresarMontoTransferencia, padx=25,border=0, pady=15, bg="#e61717",command = lambda: clearText(menuTransaccion,ingresarMontoTransferenciaTx))
 ingresarMontoTransferenciaBtMenuT.place(x=100,y=445)
 
-ventana.mainloop()
+if __name__=="__main__":
+    ventana.mainloop()

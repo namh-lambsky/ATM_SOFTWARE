@@ -1,11 +1,4 @@
 from tkinter import *
-import os
-import sys
-from tkinter import messagebox
-
-script_dir = os.path.dirname( __file__ )
-connector_dir = os.path.join( script_dir,'..','..', 'DB_CONNECTOR')
-sys.path.append( connector_dir )
 from db_connector import DAO
 
 dao=DAO()
