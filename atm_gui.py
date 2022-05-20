@@ -9,7 +9,7 @@ from atm_functions import controller
 
 ventana=Tk()
 ventana.iconbitmap('IMAGES/LogoBancolombia.ico')
-ventana.title('Cajero Automatico Bancolombia')
+ventana.title('')
 ventana.rowconfigure(0,weight=1)
 ventana.columnconfigure(0,weight=1)
 ventana.geometry("1250x580")

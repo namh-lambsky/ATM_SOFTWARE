@@ -110,7 +110,7 @@ class DAO():
         if self.bankDB.is_connected():
             try:
                 cursor=self.bankDB.cursor()
-                sqlInstruction="INSERT INTO accounts(idAccount, accountType, dateCreated, accountPassword, accountBalance, idCustomer) VALUES ('{0}','{1}','{2}','{3}', {4}, {5})"
+                sqlInstruction="INSERT INTO accounts(idAccount, accountType, dateCreated, accountPassword, accountBalance, idCustomer) VALUES ('{0}','{1}','{2}',aes_encrypt('{3}','cypherDB'), {4}, {5})"
                 cursor.execute(sqlInstruction.format(account.getIdAccount(),account.getAccountType(),account.getDateCreated(), account.getAccountPassword(), account.getAccountBalance(), account.getIdCustomer()))
                 self.bankDB.commit()
                 print("¡Nueva Cuenta ingresado con exito!")
@@ -121,7 +121,7 @@ class DAO():
         if self.bankDB.is_connected():
             try:
                 cursor=self.bankDB.cursor()
-                sqlInstruction="UPDATE accounts SET idAccount='{0}', accountType='{1}', dateCreated='{2}', accountPassword='{3}', accountBalance='{4}', idCustomer='{5}' WHERE idAccount='{0}'"
+                sqlInstruction="UPDATE accounts SET idAccount='{0}', accountType='{1}', dateCreated='{2}', accountPassword=aes_encrypt('{3}','cypherDB'), accountBalance='{4}', idCustomer='{5}' WHERE idAccount='{0}'"
                 cursor.execute(sqlInstruction.format(account.getIdAccount(),account.getAccountType(),account.getDateCreated(), account.getAccountPassword(), account.getAccountBalance(), account.getIdCustomer()))
                 self.bankDB.commit()
                 print("¡Cuenta actualizado con exito!")
@@ -143,7 +143,7 @@ class DAO():
         if self.bankDB.is_connected():
             try:
                 cursor=self.bankDB.cursor()
-                cursor.execute("SELECT accountPassword FROM accounts WHERE idAccount='{0}'".format(id))
+                cursor.execute("SELECT cast(aes_decrypt(accountPassword,'cypherDB') as int) FROM accounts WHERE idAccount='{0}'".format(id))
                 result=cursor.fetchone()
                 return result
             except Error as ex:
@@ -153,7 +153,7 @@ class DAO():
         if self.bankDB.is_connected():
             try:
                 cursor=self.bankDB.cursor()
-                sqlInstruction="UPDATE accounts SET accountPassword='{1}' WHERE idAccount='{0}'"
+                sqlInstruction="UPDATE accounts SET accountPassword=aes_encrypt('{3}','cypherDB') WHERE idAccount='{0}'"
                 cursor.execute(sqlInstruction.format(idAccount,newPassword))
                 self.bankDB.commit()
             except Error as ex:
