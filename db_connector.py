@@ -143,7 +143,7 @@ class DAO():
         if self.bankDB.is_connected():
             try:
                 cursor=self.bankDB.cursor()
-                cursor.execute("SELECT cast(aes_decrypt(accountPassword,'cypherDB') as int) FROM accounts WHERE idAccount='{0}'".format(id))
+                cursor.execute("SELECT cast(aes_decrypt(accountPassword,'cypherDB') as char) FROM accounts WHERE idAccount='{0}'".format(id))
                 result=cursor.fetchone()
                 return result
             except Error as ex:

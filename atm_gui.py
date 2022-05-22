@@ -614,25 +614,25 @@ def loadTransferMessage(amount,cardInfoList,cardInfoTList):
     if amount < 10000:
         retrieveErrorMessage(otroMontoErrorLb,"EL NUMERO NO ES VALIDO INTENTE DE NUEVO")
         #messagebox.showerror(message="Error: El numero no es valido intente de nuevo")
-        otroMontoTx.delete("0","end")
+        ingresarMontoTransferenciaTx.delete("0","end")
     else:
         if c.accountIsBlocked(cardInfoList):
             messagebox.showerror(message="Error: Ya supero el maximo de retiros diarios, retornado al menu transacciones")
-            otroMontoTx.delete("0","end")
+            ingresarMontoTransferenciaTx.delete("0","end")
             framesManager(menuTransaccion)
         else:
             if withdrawalCount==0:
                 c.updateWithdrawalCount(cardInfoList)
-                otroMontoTx.delete("0","end")
+                ingresarMontoTransferenciaTx.delete("0","end")
             else:
                 if c.transfer(amount,cardInfoList,cardInfoTList):
                     messagebox.showinfo(message="¡Transaccion Exitosa! no olvide retirar su dinero")
                     c.updateWithdrawalCount(cardInfoList)
-                    otroMontoTx.delete("0","end")
+                    ingresarMontoTransferenciaTx.delete("0","end")
                     framesManager(menuTransaccion)
                 else:
                     messagebox.showerror(message="Error: Saldo Insuficiente, retornado al menu transacciones")
-                    otroMontoTx.delete("0","end")
+                    ingresarMontoTransferenciaTx.delete("0","end")
                     framesManager(menuTransaccion)
 
 #ingresarMontoTransaccion
