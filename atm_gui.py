@@ -8,12 +8,15 @@ from tkinter.font import Font
 from atm_functions import controller
 
 ventana=Tk()
-ventana.iconbitmap('IMAGES/LogoBancolombia.ico')
+ventana.geometry("1250x580")
 ventana.title('')
+ventana.resizable (0,0)
 ventana.rowconfigure(0,weight=1)
 ventana.columnconfigure(0,weight=1)
-ventana.geometry("1250x580")
-ventana.resizable (0,0)
+icon=Image.open('IMAGES/LogoBancolombia.ico')
+icon=ImageTk.PhotoImage(icon)
+ventana.iconphoto(True,icon)
+
 c=controller()
 
 #Numero de paginas
